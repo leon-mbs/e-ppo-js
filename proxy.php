@@ -6,6 +6,9 @@
    $post =  file_get_contents('php://input'); 
   
    $post = base64_decode($post) ;
+  
+   //$post = mb_convert_encoding($post , "windows-1251", "utf-8" )  ; 
+  
    $type = $_REQUEST['type']   ;
    $request = curl_init();
  

@@ -168,7 +168,7 @@ function sign(input, keyfile, cerfile, pass) {
         console.log(ex.message || ex);
     } finally {
         if (!msg) {
-            console.log(`Signed message wasn't created`);
+            console.log(`Signed message was not created`);
 
         }
     }
