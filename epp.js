@@ -19,6 +19,14 @@ function post(queryUrL, data) {
         ));
 }
 
+/**
+ * подпись  сообщения 
+ * Ответ возвращается  в  кодировке  base64
+ * @param {*} input Сообшение
+ * @param {*} keyfile приватный ключ
+ * @param {*} cerfile сертификат
+ * @param {*} pass пароль
+ */
 function sign(input, keyfile, cerfile, pass) {
 
     const add = ({ pubIdx, cert, priv }) => {
@@ -92,6 +100,7 @@ function sign(input, keyfile, cerfile, pass) {
 
     }
 
+    //на  даный   момент не  используетс
     function getStamp(cert, hashedMessage) {
         const tsp = rfc3161.TimeStampReq.encode({
             version: 1,
@@ -152,7 +161,7 @@ function sign(input, keyfile, cerfile, pass) {
             dataHash,
             signer: priv,
             hash: algo.hash,
-            tspB,
+            //   tspB,
             signTime: null
         });
     } catch (ex) {
@@ -179,6 +188,12 @@ function sign(input, keyfile, cerfile, pass) {
 }
 
 
+/**
+ * декодирование  и проверка  подписи в  ответе  от  налоговой
+ * Ответ  возвращается  в  виде  json с  полями  ""success" (true,false)  и "data"  с  base64 кодированными  данными
+ * @param {*} body   Ответ
+ * @param {*} from1251 конвертировать  с win1251 в utf8
+ */
 function decrypt(body, from1251 = true) {
 
     function getUnwrapped(data) {

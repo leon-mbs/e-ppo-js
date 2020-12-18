@@ -1,48 +1,103 @@
 <html>
 
 <head>
-
-    <script src="signer.js" type="text/javascript"></script>
-    <script src="epp.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+       <script src="/jquery.js" type="text/javascript"></script>
+     <script src="/signer.js" type="text/javascript"></script>
+    <script src="/epp.js" type="text/javascript"></script>
+  
 
 </head>
 
 <body>
+
+    
+    <form >
+    Тип<br>
+    <select id="type">
+       <option selected  value="cmd">Команда</option>
+       <option  value="doc">Документ</option>
+    </select>  <br>
+    Сообщение<br>
+    <textarea style="height:100px;width:200px"  id="ask">{"Command":"Objects"}</textarea>
+    <br>
+    <input type="button" onclick="send()" value="Отправить" /> 
+        </form>  <br>
+    <div id="answer"></div>
+
+    
     <script>
         var key, cer, pass
 
-        var xhr = new XMLHttpRequest();
-
-
-        xhr.open('GET', 'keys.php', false);
-
-
-        xhr.send();
-
-
-        if (xhr.status != 200) {
-
-            console.log(xhr.status + ': ' + xhr.statusText);
-        } else {
-            var json = JSON.parse(xhr.responseText)
-            key = json.key;
-            cer = json.cer;
-            pass = json.pass;
+ 
+    
+      $.ajax({
+          type:"GET",
+          url: '/keys.php',
+    
+          success: function(data){
+               
+        
+                key = data.key;
+                cer = data.cer;
+                pass = data.pass;
+         
+               
+          }
+        });
+        
+        function send(){
+             
+            var ask =  $('#ask').val();
+        
+           var signedData = sign(ask, key, cer, pass)
+           var type=$("#type").val();
+           var url= '/proxy.php?type='+ type;
+           
+         $.ajax({
+          type:"POST",
+          url: url,
+          data: signedData,  
+          success: function(data){
+               
+               if(type=='doc' && data.includes('Код помилки')==false) {
+                   //декодируем  и проверяем  плдпись  ответа
+                   
+                   var answer  = decrypt(data)   ;
+                   if(answer.success==true) {
+                       $("#answer").text(  answer.data ) ;
+                   }
+               }
+               
+               
+                
+               $("#answer").text(  data ) ;
+               
+          }
+        });         
+          
+           
         }
+        
+           
+        /*
+                // пример вызова
+                signedData = sign("test", key, cer, pass)
 
 
-        signedData = sign("test", key, cer, pass)
+                console.log(signedData)
 
 
-        console.log(signedData)
+                unsignedData = decrypt(signedData, false);
 
+                console.log('\n' + unsignedData.data)
 
-        unsignedData = decrypt(signedData, false);
+                console.log('\n' + atob(unsignedData.data))
 
-        console.log('\n' + unsignedData.data)
-
-        console.log('\n' + atob(unsignedData.data))
-    </script>
-</body>
+                */
+    </script>    
+    
+    </body>
 
 </html>
