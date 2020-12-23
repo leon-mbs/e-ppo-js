@@ -137,7 +137,7 @@ function sign(input, keyfile, cerfile, pass) {
         const rtsp = rfc3161.TimeStampResp.decode(buf, 'der');
 
         if (rtsp && rtsp.status && (rtsp.status.status !== 'granted')) {
-            console.log(`Decoded data is wrong: ${rtsp}`);
+            (`Decoded data is wrong: ${rtsp}`);
             return null;
         }
 
@@ -147,9 +147,10 @@ function sign(input, keyfile, cerfile, pass) {
 
     const algo = gost89.compat.algos();
     const { cert, priv } = getCertAndPriv(algo, keyfile, cerfile, pass);
-    const data = input;
+    const data =    new buffer.Buffer(input);
+     
     const dataHash = algo.hash(data);
-    const tspB = getStamp(cert, dataHash);
+   // const tspB = getStamp(cert, dataHash);
 
     let msg;
 
